@@ -45,7 +45,7 @@ def main():
         strategies_all.setdefault(cls,rel2dict(getmembers(eval(cls), isfunction),{}))
 
     # load the input audio file
-    audio, sr = librosa.load(config['filepaths']['input_audio'])
+    audio, sr = librosa.load(config['general']['input_audio'])
 
     # fourier transform input audio into frequency space
     # result is 2D matrix where index element [f][t] is
@@ -93,7 +93,7 @@ def main():
     out_audio = librosa.istft(out_audio_stft)
 
     # save audio
-    sf.write(config['filepaths']['output_audio'], out_audio, sr)
+    sf.write(config['general']['output_audio'], out_audio, sr)
 
 
 def take_closest(myList, myNumber):
