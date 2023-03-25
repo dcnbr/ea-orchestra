@@ -72,7 +72,7 @@ In the `configuration.ini` file:
 ...
 
 [parents]
-strategy_name = tournament
+strategy_name = tournament ; must match the function name in the .py file exactly
 mating_pool_size = 100
 tournament_size = 10
 
