@@ -13,7 +13,7 @@ Ideally, just do:
 
 # Running
 ```
-~$ python3 main.py <config.ini>
+~$ python3 main.py /path/to/config.ini
 ```
 
 # Configuration file
@@ -64,7 +64,7 @@ be passed as a python dictionany of key:value pairs.
 
 For example, consider implementing tournament-based parent selection.
 Tournament selection requires two hyper-parameters, `mating_pool_size` and
-`tournament_size`, as well as the population's `fitness`.\_
+`tournament_size`, as well as the population's `fitness`.
 
 In the `configuration.ini` file:
 ```ini
@@ -81,7 +81,7 @@ tournament_size = 10
 
 In `parents.py`:
 ```python
-def tournament(fitness, hyperparams)
+def tournament(fitness, hyperparams):
 	mating_pool_size = int(hyperparams['mating_pool_size'])
 	tournament_size = int(hyperparams['tournament_size'])
 
