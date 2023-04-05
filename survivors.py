@@ -1,10 +1,6 @@
 import random
 
 
-def survivors_1():
-    return 0
-
-
 def mu_plus_lambda(current_pop, current_fitness, offspring, offspring_fitness):
     """mu+lambda selection"""
 
@@ -35,7 +31,7 @@ def replacement(current_pop, current_fitness, offspring, offspring_fitness):
     # Combine fitness and individual lists for current generation so their indices are linked during processing
     curr_gen = zip(current_fitness, current_pop)
     # Select the top ranked candidates in the current generation based on fitness
-    curr_gen_survivors = sorted(curr_gen, reverse=True)[
+    curr_gen_survivors = sorted(curr_gen, key=lambda x : x[0], reverse=True)[
         : (len(current_pop) - len(offspring))
     ]
     # Separate the lists
@@ -67,3 +63,5 @@ def random_uniform(current_pop, current_fitness, offspring, offspring_fitness):
     population = list(population)
 
     return population, fitness
+
+

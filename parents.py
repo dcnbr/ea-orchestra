@@ -1,10 +1,6 @@
 import random
 
 
-def parents_1():
-    return 0
-
-
 def tournament(fitness, hyperparams):
     """Tournament selection without replacement"""
 
@@ -50,7 +46,7 @@ def MPS(fitness, hyperparams):
     return selected_to_mate
 
 
-def random_uniform(hyperparams):
+def random_uniform(fitness, hyperparams):
     """Random uniform selection"""
     population_size = int(hyperparams["population_size"])
     mating_pool_size = int(hyperparams["mating_pool_size"])
@@ -62,3 +58,5 @@ def random_uniform(hyperparams):
     # student code ends
 
     return selected_to_mate
+
+

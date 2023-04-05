@@ -9,7 +9,7 @@ from bisect import bisect_left
 import soundfile as sf
 import cmath
 
-
+import ea
 import fitness
 import mutation
 import crossover
@@ -17,7 +17,7 @@ import parents
 import survivors
 
 strat_classes = ['fitness', 'mutation', 'crossover', 'parents', 'survivors']
-np.set_printoptions(precision=3,edgeitems=2, linewidth=180)
+np.set_printoptions(precision=8, linewidth=180)
 
 def main():
     # open config file
@@ -25,6 +25,8 @@ def main():
         config_path = sys.argv[1]
         config = configparser.ConfigParser()
         config.read(config_path)
+        config['internal'] = {}
+
         assert os.path.isfile(config_path)
     except IndexError:
         print("Missing path to config file.")
@@ -41,8 +43,10 @@ def main():
 
     # aggregate all the strategies that have been implemented
     strategies_all = {}
+    strats_chosen = {}
     for cls in strat_classes:
         strategies_all.setdefault(cls,rel2dict(getmembers(eval(cls), isfunction),{}))
+        strats_chosen[cls] = strategies_all[cls][config[cls]['strategy_name']]
 
     # load the input audio file
     audio, sr = librosa.load(config['general']['input_audio'])
@@ -68,29 +72,41 @@ def main():
                                             ('phs', in_audio_tensor.dtype)])
     in_audio_tuples = in_audio_tuples.reshape(in_audio_tuples.shape[:-1])
 
+    # defaults
+    if 'population_size' not in config['parents']:
+        config['parents']['population_size'] = str(in_audio_tuples.shape[0])
+
+    if 'mating_pool_percent' in config['parents']:
+        config['parents']['mating_pool_size'] = str(int(
+            config['parents'].getfloat('mating_pool_percent')
+            * config['parents'].getint('population_size')))
+
+    if 'tournament_percent' in config['parents']:
+        config['parents']['tournament_size'] = str(int(
+            config['parents'].getfloat('tournament_percent')
+            * config['parents'].getint('mating_pool_size')))
 
     # do evolutionary algorithm
-    # TODO: placeholder, just copy over the input signal
-    out_audio_tuples = in_audio_tuples
-
+    out_audio_tuples = ea.ea(np.transpose(in_audio_tuples), strats_chosen, config)
 
     # round/lerp population back into frequency bins
     libfreqs = librosa.fft_frequencies()
-    out_audio_stft = np.zeros(in_audio_stft.shape, np.complex128)
+    out_audio_stft = np.transpose(np.zeros(in_audio_stft.shape, np.complex128))
     for x in range(0,out_audio_tuples.shape[0]):
         for y in range(0,out_audio_tuples.shape[1]):
             # round individuals to their nearest bin
-            freq, ix = take_closest(libfreqs, out_audio_tuples[x][y][0])
+            #freq, ix = take_closest(libfreqs, out_audio_tuples[x][y][0])
+            freq_idx = round((out_audio_tuples[x][y]['frq']*1024) /11025)
 
             # convert back to complex-valued signal
-            polar_coord = out_audio_tuples[x][y][1]
-            polar_coord *= np.exp(1j*out_audio_tuples[x][y][2])
+            polar_coord = out_audio_tuples[x][y]['amp']
+            polar_coord *= np.exp(1j*out_audio_tuples[x][y]['phs'])
 
             # accumulate individuals
-            out_audio_stft[ix][y] += polar_coord
+            out_audio_stft[x][freq_idx] += polar_coord
 
     # invert the population from frequency space back into an audio signal
-    out_audio = librosa.istft(out_audio_stft)
+    out_audio = librosa.istft(np.transpose(out_audio_stft))
 
     # save audio
     sf.write(config['general']['output_audio'], out_audio, sr)

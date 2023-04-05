@@ -1,8 +1,9 @@
 import random
 
-
-def mutation_1():
-    return 0
+allele_for = {
+        "frequency": 0,
+        "amplitude": 1,
+        "phase"    : 2}
 
 
 def adjust_amp_freq(individual, hyperparams):
@@ -21,9 +22,9 @@ def adjust_amp(individual, hyperparams):
     amp_change = amp_change if random.randint(0, 1) else -amp_change
 
     mutant = (
-        individual["frequency"],
-        individual["amplitude"] + amp_change,
-        individual["phase"],
+        individual[allele_for["frequency"]],
+        individual[allele_for["amplitude"]] + amp_change,
+        individual[allele_for["phase"]],
     )
 
     return mutant
@@ -36,9 +37,11 @@ def adjust_freq(individual, hyperparams):
     freq_change = freq_change if random.randint(0, 1) else -freq_change
 
     mutant = (
-        individual["frequency"] + freq_change,
-        individual["amplitude"],
-        individual["phase"],
+        individual[allele_for["frequency"]] + freq_change,
+        individual[allele_for["amplitude"]],
+        individual[allele_for["phase"]],
     )
 
     return mutant
+
+
