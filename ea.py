@@ -33,7 +33,11 @@ def ea(input_grid, strat_for, config):
         print("working frame " + str(meta_index) + " / " + str(fft_frames_count), end='\r')
         # === parent selection ===
         parents_index = strat_for['parents'](current_fitness, config['parents'])
-        random.shuffle(parents_index)
+        parents_bodies = [(x, current_population[x]) for x in parents_index]
+        parents_bodies.sort(key=lambda tup : tup[1][0])
+        parents_index = [x for x, y in parents_bodies]
+
+        #random.shuffle(parents_index)
 
         # === crossover ===
         # siblings = [ crossover(p1, p2) for parents (p1, p2)] sampled w/o replacement
@@ -56,6 +60,8 @@ def ea(input_grid, strat_for, config):
 
         # === fitness ===
         offspring_fitness = [strat_for['fitness'](x, input_grid[meta_index], config['fitness']) for x in offspring]
+        current_fitness = [strat_for['fitness'](x, input_grid[meta_index], config['fitness']) for x in current_population]
+
 
         # === survivor selevtion & replacement ===
         next_population, next_fitness = (
