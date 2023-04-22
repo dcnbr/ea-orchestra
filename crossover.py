@@ -1,5 +1,8 @@
 import numpy as np
 
+def noop(p1, p2, config=None):
+    return p1, p2
+
 def whole_arithmetic_crossover(parent1, parent2, config=None):
     """whole arithmetic crossover for integer representations"""
 
