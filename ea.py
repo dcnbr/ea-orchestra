@@ -18,12 +18,13 @@ def ea(input_grid, strat_for, config):
                                                   ('amp', current_population.dtype),
                                                   ('phs', current_population.dtype)])
     current_population = current_population.reshape(current_population.shape[:-1])
-    current_population['frq'] = current_population['frq']*1025
+    current_population['frq'] = current_population['frq']*11025
     population_history = np.zeros(input_grid.shape, input_grid.dtype)
     population_history[0] = current_population
 
     # calculate population fitness
     current_fitness = [strat_for['fitness'](x, input_grid[0], config['fitness']) for x in current_population]
+
 
     meta_index = 0
     per_frame_counter = 0

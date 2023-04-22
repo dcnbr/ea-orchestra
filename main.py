@@ -96,14 +96,14 @@ def main():
         for y in range(0,out_audio_tuples.shape[1]):
             # round individuals to their nearest bin
             #freq, ix = take_closest(libfreqs, out_audio_tuples[x][y][0])
-            freq_idx = round((out_audio_tuples[x][y]['frq']*1024) /11025)
+            freq_idx = max(0, min(1024, round((out_audio_tuples[x][y]['frq']*1024) /11025)))
 
             # convert back to complex-valued signal
             polar_coord = out_audio_tuples[x][y]['amp']
             polar_coord *= np.exp(1j*out_audio_tuples[x][y]['phs'])
 
             # accumulate individuals
-            out_audio_stft[x][freq_idx] += polar_coord
+            out_audio_stft[x][freq_idx] = max(polar_coord, out_audio_stft[x][freq_idx])
 
     # invert the population from frequency space back into an audio signal
     out_audio = librosa.istft(np.transpose(out_audio_stft))
