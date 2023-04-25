@@ -5,6 +5,7 @@ import mutation
 import crossover
 import parents
 import survivors
+import parent_pairing
 
 import random
 import numpy as np
@@ -33,18 +34,13 @@ def ea(input_grid, strat_for, config):
         print("working frame " + str(meta_index) + " / " + str(fft_frames_count), end='\r')
         # === parent selection ===
         parents_index = strat_for['parents'](current_fitness, config['parents'])
-        parents_bodies = [(x, current_population[x]) for x in parents_index]
-        parents_bodies.sort(key=lambda tup : tup[1][0])
-        parents_index = [x for x, y in parents_bodies]
-
-        #random.shuffle(parents_index)
+        parents_index = strat_for['parent_pairing'](parents_index, current_population, config['parent_pairing'])
 
         # === crossover ===
         # siblings = [ crossover(p1, p2) for parents (p1, p2)] sampled w/o replacement
-        # pairs parents like (first, last), (second, second-last), etc
-        # x > y ensures only one of (first, last) and (last, first) is used
+        # pairs parents like (first, second), (third, fourth), etc
         siblings = [strat_for['crossover'](current_population[x], current_population[y], config['crossover'])
-                    for x,y in zip(parents_index, parents_index[::-1]) if x > y]
+                    for x,y in zip(parents_index[::2], parents_index[1::2])]
         # flatten [(c1, c2), ...] to [c1, c2 ...]
         zygotes = [z for pair in siblings for z in pair]
 

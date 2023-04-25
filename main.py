@@ -15,8 +15,9 @@ import mutation
 import crossover
 import parents
 import survivors
+import parent_pairing
 
-strat_classes = ['fitness', 'mutation', 'crossover', 'parents', 'survivors']
+strat_classes = ['fitness', 'mutation', 'crossover', 'parents', 'survivors', 'parent_pairing']
 np.set_printoptions(precision=8, linewidth=180)
 
 def main():
